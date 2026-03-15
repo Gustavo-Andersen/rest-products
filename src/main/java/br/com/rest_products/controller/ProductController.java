@@ -5,6 +5,7 @@ import br.com.rest_products.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,39 +13,42 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping(
+        value = "/product",
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+        )
 public class ProductController {
 
     @Autowired
     ProductService service;
 
-    @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDTO dto){
+    @PostMapping()
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid ProductDTO dto){
         ProductDTO created = service.postProduct(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @GetMapping
-    public ResponseEntity<?> listAllProducts(){
+    @GetMapping()
+    public ResponseEntity<List<ProductDTO>> listAllProducts(){
         List<ProductDTO> dtoList = service.listProduct();
-        return ResponseEntity.status(HttpStatus.OK).body(dtoList);
+        return ResponseEntity.ok(dtoList);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> searchProduct(@PathVariable UUID id){
-            ProductDTO dto = service.getProduct(id);
-            return ResponseEntity.status(HttpStatus.OK).body(dto);
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<ProductDTO> searchProduct(@PathVariable UUID id){
+        ProductDTO dto = service.getProduct(id);
+        return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable UUID id){
-            service.deleteProduct(id);
-            return ResponseEntity.noContent().build();
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id){
+        service.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable UUID id, @RequestBody @Valid ProductDTO newProduct){
-            ProductDTO dto = service.updateProduct(newProduct, id);
-            return ResponseEntity.status(HttpStatus.OK).body(dto);
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable UUID id, @RequestBody @Valid ProductDTO newProduct){
+        ProductDTO dto = service.updateProduct(newProduct, id);
+        return ResponseEntity.ok(dto);
     }
 }

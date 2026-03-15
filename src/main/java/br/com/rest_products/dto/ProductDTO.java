@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
-public record ProductDTO(
+public record ProductDTO (
         UUID id,
         @NotBlank(message = "Nome obrigatório")
         String name,
